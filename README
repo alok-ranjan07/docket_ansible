@@ -1,0 +1,72 @@
+# build master image
+docker build -t alokranjan2000/ansible_master_node -f Dockerfile_ansible_master .
+
+# push master image to docker hub
+docker push alokranjan2000/ansible_master_node
+
+# push master image to docker hub
+docker pull alokranjan2000/ansible_master_node
+
+# run container from master image
+docker run -d -v ansible_volume:/etc/ansible --name master_node alokranjan2000/ansible_master_node
+
+# login to master container
+docker exec -it master_node /bin/bash
+
+# copy public key to target nodes
+cat /home/ansible/.ssh/id_rsa.pub
+
+# stop master container
+docker stop master_node
+
+# remove master container
+docker rm master_node
+
+# remove master image
+docker rmi alokranjan2000/ansible_master_node
+
+# copy inventory file to master node
+docker cp ansible/hosts master_node:/etc/ansible/hosts
+
+# execute ansible-playbook on master node to check ping status on target nodes
+docker exec -it master_node ansible all -m ping -e "ansible_user=ansible"
+
+
+
+
+
+# build target image
+docker build -t alokranjan2000/ansible_target_node -f Dockerfile_ansible_target .
+
+# push master image to docker hub
+docker push alokranjan2000/ansible_target_node
+
+# push master image to docker hub
+docker pull alokranjan2000/ansible_target_node
+
+# run container from master image
+docker run -d -v ansible_volume:/etc/ansible --name target_node1 alokranjan2000/ansible_target_node
+docker run -d -v ansible_volume:/etc/ansible --name target_node2 alokranjan2000/ansible_target_node
+docker run -d -v ansible_volume:/etc/ansible --name target_node3 alokranjan2000/ansible_target_node
+docker run -d -v ansible_volume:/etc/ansible --name target_node4 alokranjan2000/ansible_target_node
+
+# update inventory file with target nodes ip addresses
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' target_node1
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' target_node2
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' target_node3
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' target_node4
+
+# login to master container
+docker exec -it target_node1 /bin/bash
+docker exec -it target_node2 /bin/bash
+docker exec -it target_node3 /bin/bash
+docker exec -it target_node4 /bin/bash
+
+# stop master container
+docker stop target_node1 target_node2 target_node3 target_node4
+
+# remove master container
+docker rm target_node1 target_node2 target_node3 target_node4
+
+# remove master image
+docker rmi alokranjan2000/ansible_target_node

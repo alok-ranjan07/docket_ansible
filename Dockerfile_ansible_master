@@ -1,0 +1,28 @@
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    sudo \
+    openssh-client \
+    openssh-server \
+    iproute2 \
+    ansible \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./ansible /etc/ansible
+
+RUN useradd -ms /bin/bash ansible && \
+    mkdir -p /home/ansible/.ssh && \
+    chmod 700 /home/ansible/.ssh && \
+    chown ansible:ansible /home/ansible/.ssh && \
+    echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    ssh-keygen -t ed25519 -f /home/ansible/.ssh/id_rsa -N "" -C "docker-ansible-key" && \
+    chown ansible:ansible /home/ansible/.ssh/id_rsa /home/ansible/.ssh/id_rsa.pub && \
+    service ssh start
+
+EXPOSE 22
+
+WORKDIR /etc/ansible
+
+ENTRYPOINT ["sleep"]
+CMD ["infinity"]

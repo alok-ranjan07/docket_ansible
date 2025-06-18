@@ -1,0 +1,8 @@
+[docker-hosts]
+target_node1 ansible_host=172.17.0.3
+target_node2 ansible_host=172.17.0.4
+target_node3 ansible_host=172.17.0.5
+target_node4 ansible_host=172.17.0.6
+
+[docker-hosts:vars]
+ansible_user=ansible

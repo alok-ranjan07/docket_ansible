@@ -19,5 +19,5 @@ for line in lines:
 with open("ansible/hosts", "w") as f:
     f.write("[docker-hosts]\n")
     for idx, (name, ip) in enumerate(host_map.items(), 1):
-        f.write(f"target_node{idx} ansible_host={ip}\n")
+        f.write(f"{name} ansible_host={ip}\n")
     f.write("\n[docker-hosts:vars]\nansible_user=ansible\n")

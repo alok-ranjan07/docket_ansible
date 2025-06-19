@@ -48,8 +48,6 @@ docker rmi alokranjan2000/ansible_master_node
 
 
 
-
-
 # push master image to docker hub
 docker pull alokranjan2000/ansible_target_node
 # login to master container
@@ -83,10 +81,18 @@ docker compose up -d
 # with docker swarm
 docker swarm init
 docker network create -d overlay ansible_net
+docker build -t alokranjan2000/ansible_master_node -f Dockerfile_ansible_master .
+docker push alokranjan2000/ansible_master_node
+docker build -t alokranjan2000/ansible_target_node -f Dockerfile_ansible_target .
+docker push alokranjan2000/ansible_target_node
+
+# create ansible stack
 docker stack deploy -c docker-compose.yml ansible_stack
 
 # After services up
 python generate_inventory.py
+# or
+node generate_inventory.js
 
 # Run playbook
 docker exec -it $(docker ps -q --filter name=ansible_stack_master) ansible-playbook /etc/ansible/playbook/playbook.yml -u ansible
@@ -94,6 +100,11 @@ docker exec -it $(docker ps -q --filter name=ansible_stack_master) ansible-playb
 # to scale target nodes
 docker service scale ansible_stack_target=10
 python generate_inventory.py
+# or
+node generate_inventory.js
 
 # Check the result
 docker service ps ansible_stack_target
+
+# destroy all services
+docker stack rm ansible_stack

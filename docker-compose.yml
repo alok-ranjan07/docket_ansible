@@ -2,22 +2,23 @@ version: "3.8"
 
 services:
   master:
-    build:
-      context: .
-      dockerfile: Dockerfile_ansible_master
+    image: alokranjan2000/ansible_master_node
     networks:
       - ansible_net
     volumes:
       - ./ansible:/etc/ansible
-      - sshkey:/home/ansible/.ssh
+      - sshkey:/public_key
+    command: >
+      bash -c "
+      cp /home/ansible/.ssh/id_rsa.pub /public_key/id_rsa.pub &&
+      /usr/sbin/sshd -D
+      "
     deploy:
       placement:
         constraints: [node.role == manager]
 
   target:
-    build:
-      context: .
-      dockerfile: Dockerfile_ansible_target
+    image: alokranjan2000/ansible_target_node
     networks:
       - ansible_net
     volumes:
@@ -26,9 +27,10 @@ services:
       bash -c "
       mkdir -p /home/ansible/.ssh &&
       cat /tmp/sshkey_ro/id_rsa.pub >> /home/ansible/.ssh/authorized_keys &&
+      chown ansible:ansible /home/ansible/.ssh &&
       chmod 700 /home/ansible/.ssh &&
+      chown root:root /home/ansible/.ssh/authorized_keys &&
       chmod 604 /home/ansible/.ssh/authorized_keys &&
-      chown -R root:root /home/ansible/.ssh &&
       /usr/sbin/sshd -D
       "
     deploy:

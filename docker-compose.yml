@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile_ansible_master
+    networks:
+      - ansible_net
+    volumes:
+      - ./ansible:/etc/ansible
+      - sshkey:/home/ansible/.ssh
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  target:
+    build:
+      context: .
+      dockerfile: Dockerfile_ansible_target
+    networks:
+      - ansible_net
+    volumes:
+      - sshkey:/tmp/sshkey_ro:ro
+    command: >
+      bash -c "
+      mkdir -p /home/ansible/.ssh &&
+      cat /tmp/sshkey_ro/id_rsa.pub >> /home/ansible/.ssh/authorized_keys &&
+      chmod 700 /home/ansible/.ssh &&
+      chmod 604 /home/ansible/.ssh/authorized_keys &&
+      chown -R root:root /home/ansible/.ssh &&
+      /usr/sbin/sshd -D
+      "
+    deploy:
+      replicas: 4
+
+volumes:
+  sshkey:
+
+networks:
+  ansible_net:
+    driver: overlay

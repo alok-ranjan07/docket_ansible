@@ -70,3 +70,30 @@ docker exec -it master_node /bin/bash
 docker stop master_node
 # remove master container
 docker rm master_node
+
+
+
+
+# with docker compose    
+docker compose up -d
+
+
+
+
+# with docker swarm
+docker swarm init
+docker network create -d overlay ansible_net
+docker stack deploy -c docker-compose.yml ansible_stack
+
+# After services up
+python generate_inventory.py
+
+# Run playbook
+docker exec -it $(docker ps -q --filter name=ansible_stack_master) ansible-playbook /etc/ansible/playbook/playbook.yml -u ansible
+
+# to scale target nodes
+docker service scale ansible_stack_target=10
+python generate_inventory.py
+
+# Check the result
+docker service ps ansible_stack_target

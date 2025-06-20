@@ -81,10 +81,9 @@ docker compose up -d
 # with docker swarm
 docker swarm init
 docker network create -d overlay ansible_net
-docker build -t alokranjan2000/ansible_master_node -f Dockerfile_ansible_master .
-docker push alokranjan2000/ansible_master_node
-docker build -t alokranjan2000/ansible_target_node -f Dockerfile_ansible_target .
-docker push alokranjan2000/ansible_target_node
+docker build -t alokranjan2000/ansible_nodes -f Dockerfile .
+docker push alokranjan2000/ansible_nodes
+docker pull alokranjan2000/ansible_nodes
 
 # create ansible stack
 docker stack deploy -c docker-compose.yml ansible_stack

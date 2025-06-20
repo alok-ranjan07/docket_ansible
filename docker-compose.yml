@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   master:
-    image: alokranjan2000/ansible_master_node
+    image: alokranjan2000/ansible_nodes
     networks:
       - ansible_net
     volumes:
@@ -10,6 +10,8 @@ services:
       - sshkey:/public_key
     command: >
       bash -c "
+      ssh-keygen -t ed25519 -f /home/ansible/.ssh/id_rsa -N '' -C 'docker-ansible-key' &&
+      chown ansible:ansible /home/ansible/.ssh/id_rsa /home/ansible/.ssh/id_rsa.pub &&
       cp /home/ansible/.ssh/id_rsa.pub /public_key/id_rsa.pub &&
       /usr/sbin/sshd -D
       "
@@ -18,7 +20,7 @@ services:
         constraints: [node.role == manager]
 
   target:
-    image: alokranjan2000/ansible_target_node
+    image: alokranjan2000/ansible_nodes
     networks:
       - ansible_net
     volumes:

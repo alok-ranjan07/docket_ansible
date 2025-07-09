@@ -1,8 +1,4 @@
 [docker-hosts]
-ansible_stack_target.3.jhjxjgcfxxmskwc1wm562a853 ansible_host=10.0.2.7
-ansible_stack_target.2.ybmydzc7fpxdfjdxvigb5bz2b ansible_host=10.0.2.6
-ansible_stack_target.4.wtut8atnsfwdt578hv6k0635f ansible_host=10.0.2.8
-ansible_stack_target.1.pvw30bkqq2mxkuv7s2ln2ccxu ansible_host=10.0.2.9
 
 [docker-hosts:vars]
 ansible_user=ansible

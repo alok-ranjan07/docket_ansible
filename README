@@ -1,7 +1,7 @@
 Ansible Automation with Docker Swarm
 Easily deploy, scale, and manage your Ansible environment using Docker Swarm.
 Language composition:
-JavaScript Python Dockerfile
+JavaScript Python Dockerfile Ansible
 
 All commands below can be run from your VS Code terminal on Windows, macOS, or Linux.
 

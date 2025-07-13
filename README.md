@@ -7,7 +7,7 @@ _All commands below can be run from your terminal in VS Code on Windows, macOS, 
 
 ## 1. Initialize Docker Swarm & Network
 
-Start Docker Swarm mode and set up the required overlay network:
+Initialize Docker Desktop application, Start Docker Swarm mode and set up the required overlay network:
 
 ```
 docker swarm init

@@ -23,6 +23,8 @@ services:
     image: alokranjan2000/ansible_nodes
     networks:
       - ansible_net
+    ports:
+      - "8080:8080"
     volumes:
       - sshkey:/tmp/sshkey_ro:ro
     command: >

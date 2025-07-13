@@ -1,6 +1,46 @@
 - hosts: all
   strategy: free
+  vars:
+    HOSTNAME: "{{ ansible_host }}"
+    PORT: 8080
   gather_facts: no
   tasks:
     - name: Ping all targets
       ansible.builtin.ping:
+
+    - name: Clone the repo
+      ansible.builtin.git:
+        repo: https://github.com/alok-ranjan07/commercetools-vision-spa.git
+        dest: /tmp/vision
+        single_branch: yes
+        version: master
+        force: yes
+
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: /etc/ansible/.env
+        dest: /tmp/vision/vision-spa-backend/.env
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Run npm install and start
+      ansible.builtin.shell: npm install && npm run start
+      args:
+        chdir: /tmp/vision/vision-spa-backend
+      async: 300
+      poll: 0
+      register: shell_output
+
+    - name: Wait for the service to be available
+      ansible.builtin.wait_for:
+        port: "{{ PORT }}"
+        host: "{{ HOSTNAME }}"
+        delay: 15
+        timeout: 60
+        state: started
+      register: port_check
+
+    - name: Show final result
+      debug:
+        var: port_check
